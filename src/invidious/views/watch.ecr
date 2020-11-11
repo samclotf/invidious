@@ -229,6 +229,32 @@
 
             <hr>
 
+            <div id="caption-edit">
+                <b>Custom Captions:</b>
+                <% custom_captions.each do |caption| %>
+                    <div class="caption-delete">
+                        <%= caption.name %> (<%= caption.language %>)
+                        <input type="submit" caption-id=<%= caption.id %> class="pure-button pure-button-primary" value="Delete">
+                    </div>
+                <% end %>
+            </div>
+
+            <div>
+
+                <!-- TODO look up best practices for this. i am not a webdev -->
+                <label type="hidden" value="<%= video.id %>" id="caption-upload-videoid"></label>
+                <label for="caption-upload-name">Name:</label>
+                <input type="text" id="caption-upload-name">
+                <label for="caption-upload-language">Language:</label>
+                <input type="text" id="caption-upload-language">
+                <label for="caption-upload">Upload track:</label>
+                <input type="file" id="caption-upload-select">
+                <input type="submit" id="caption-upload-submit">
+
+            </div>
+
+            <hr>
+
             <div id="comments">
                 <% if nojs %>
                     <%= comment_html %>

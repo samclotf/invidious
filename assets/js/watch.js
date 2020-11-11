@@ -458,4 +458,34 @@ window.addEventListener('load', function (e) {
         comments = document.getElementById('comments');
         comments.innerHTML = '';
     }
+
+    const captions = document.getElementsByClassName('caption-delete');
+    for(i = 0; i < captions.length; i++) {
+        captions[i].onclick = function(event) {
+            caption_id = event.target.attributes["caption-id"].value;
+            var url = '/customcaption/delete/' + caption_id;
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", url);
+            xhr.send();
+        };
+    }
+
+    const caption_upload = document.getElementById('caption-upload-submit');
+    caption_upload.onclick = function(event) {
+        var url = '/customcaption/create';
+        var xhr = new XMLHttpRequest();
+        var formData = new FormData();
+
+        var video_id = document.getElementById("caption-upload-videoid").attributes["value"].value;
+        var text = document.getElementById("caption-upload-select").files[0];
+        var name = document.getElementById("caption-upload-name").value;
+        var language = document.getElementById("caption-upload-language").value;
+
+        formData.append("videoid", video_id);
+        formData.append("text", text);
+        formData.append("name", name);
+        formData.append("language", language);
+        xhr.open("POST", url);
+        xhr.send(formData);
+    };
 });

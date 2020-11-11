@@ -3302,13 +3302,11 @@ end
 
 # Given a caption id, return the caption as a webvtt
 get "/customcaption/:id" do |env|
-  locale = LOCALES[env.get("preferences").as(Preferences).locale]?
-
   id = env.params.url["id"]
 
   env.response.content_type = "text/vtt; charset=UTF-8"
 
-  caption = PG_DB.query_one("SELECT text, language FROM captions WHERE id = $1", id, as: InvidiousCaption)
+  caption = PG_DB.query_one("SELECT * FROM captions WHERE id = $1", id, as: InvidiousCaption)
 
   <<-END_VTT
   WEBVTT
@@ -3317,6 +3315,29 @@ get "/customcaption/:id" do |env|
 
   #{caption.text}
   END_VTT
+end
+
+post "/customcaption/delete/:id" do |env|
+  id = env.params.url["id"]
+
+  PG_DB.exec("DELETE FROM captions WHERE id = $1", id)
+
+  env.response.status_code = 204
+end
+
+post "/customcaption/create" do |env|
+  video_id = env.params.body["videoid"]
+  name = env.params.body["name"]
+  language = env.params.body["language"]
+
+  text_fn = env.params.files["text"].tempfile.path
+  text = File.read(text_fn)
+
+  ret = PG_DB.exec("INSERT INTO captions (text, video_id, name, language) VALUES ($1, $2, $3, $4)",
+    text, video_id, name, language)
+  puts ret
+
+  env.response.status_code = 204
 end
 
 get "/api/v1/captions/:id" do |env|
