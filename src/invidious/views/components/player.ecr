@@ -33,6 +33,10 @@
             <track kind="captions" src="/api/v1/captions/<%= video.id %>?label=<%= caption.name.simpleText %>&hl=<%= env.get("preferences").as(Preferences).locale %>"
                 label="<%= caption.name.simpleText %>">
         <% end %>
+        <% custom_captions.each do |caption| %>
+            <track kind="captions" src="/customcaption/<%= caption.id %>"
+                label="<%= caption.name %>">
+        <% end %>
     <% end %>
 </video>
 

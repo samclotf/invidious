@@ -156,6 +156,11 @@
                                     <%= translate(locale, "Subtitles - `x` (.vtt)", caption.name.simpleText) %>
                                 </option>
                             <% end %>
+                            <% custom_captions.each do |caption| %>
+                                <option value='{"id":"<%= video.id %>","label":"<%= caption.name %>","title":"<%= URI.encode_www_form(video.title) %>-<%= video.id %>.<%= caption.language %>.vtt"}'>
+                                    <%= translate(locale, "Subtitles - `x` (.vtt)", caption.name) %>
+                                </option>
+                            <% end %>
                         </select>
                     </div>
 

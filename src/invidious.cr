@@ -455,6 +455,8 @@ get "/watch" do |env|
   }
   captions = captions - preferred_captions
 
+  custom_captions = PG_DB.query_all("SELECT id, name, language FROM captions WHERE video_id = $1", id, as: InvidiousCaption)
+
   aspect_ratio = "16:9"
 
   thumbnail = "/vi/#{video.id}/maxres.jpg"
@@ -665,6 +667,8 @@ get "/embed/:id" do |env|
       params.preferred_captions.index(caption.languageCode.split("-")[0])).not_nil!
   }
   captions = captions - preferred_captions
+
+  custom_captions = PG_DB.query_all("SELECT id, name, language FROM captions WHERE video_id = $1", id, as: InvidiousCaption)
 
   aspect_ratio = nil
 
@@ -3681,6 +3685,25 @@ get "/api/v1/storyboards/:id" do |env|
       end
     end
   end
+end
+
+# Given a caption id, return the caption as a webvtt
+get "/customcaption/:id" do |env|
+  locale = LOCALES[env.get("preferences").as(Preferences).locale]?
+
+  id = env.params.url["id"]
+
+  env.response.content_type = "text/vtt; charset=UTF-8"
+
+  caption = PG_DB.query_one("SELECT text, language FROM captions WHERE id = $1", id, as: InvidiousCaption)
+
+  <<-END_VTT
+  WEBVTT
+  Kind: captions
+  Language: #{caption.language}
+
+  #{caption.text}
+  END_VTT
 end
 
 get "/api/v1/captions/:id" do |env|
