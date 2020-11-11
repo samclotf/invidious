@@ -459,33 +459,34 @@ window.addEventListener('load', function (e) {
         comments.innerHTML = '';
     }
 
-    const captions = document.getElementsByClassName('caption-delete');
-    for(i = 0; i < captions.length; i++) {
-        captions[i].onclick = function(event) {
-            caption_id = event.target.attributes["caption-id"].value;
-            var url = '/customcaption/delete/' + caption_id;
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", url);
+    const caption_delete_forms = document.getElementsByClassName('caption-delete');
+    for(i = 0; i < caption_delete_forms.length; i++) {
+        let caption_delete_form = caption_delete_forms[i];
+        let caption_delete_submit = caption_delete_form.getElementsByClassName("caption-delete-submit")[0];
+        caption_delete_submit.onclick = function(event) {
+
+            let formData = new FormData(caption_delete_form);
+            let url = caption_delete_form.action;
+            let method = caption_delete_form.method;
+            let xhr = new XMLHttpRequest();
+
+            xhr.open(method, url);
             xhr.send();
+            return false;
         };
     }
 
     const caption_upload = document.getElementById('caption-upload-submit');
+    const caption_upload_submit = document.getElementById("caption-upload");
     caption_upload.onclick = function(event) {
-        var url = '/customcaption/create';
-        var xhr = new XMLHttpRequest();
-        var formData = new FormData();
 
-        var video_id = document.getElementById("caption-upload-videoid").attributes["value"].value;
-        var text = document.getElementById("caption-upload-select").files[0];
-        var name = document.getElementById("caption-upload-name").value;
-        var language = document.getElementById("caption-upload-language").value;
+        let formData = new FormData(caption_upload_submit);
+        let url = caption_upload_submit.action;
+        let method = caption_upload_submit.method;
+        let xhr = new XMLHttpRequest();
 
-        formData.append("videoid", video_id);
-        formData.append("text", text);
-        formData.append("name", name);
-        formData.append("language", language);
-        xhr.open("POST", url);
+        xhr.open(method, url);
         xhr.send(formData);
+        return false;
     };
 });
