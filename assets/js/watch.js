@@ -472,6 +472,13 @@ window.addEventListener('load', function (e) {
 
             xhr.open(method, url);
             xhr.send();
+
+            xhr.onload = function() {
+                if(xhr.status == 204) {
+                    caption_delete_form.remove();
+                }
+            };
+
             return false;
         };
     }

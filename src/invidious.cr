@@ -3336,7 +3336,7 @@ post "/customcaption/create" do |env|
   header, tmp, text_body = text.partition("\n\n")
   language = header.partition("Language: ")[2]
 
-  ret = PG_DB.exec("INSERT INTO captions (text, video_id, name, language) VALUES ($1, $2, $3, $4)",
+  PG_DB.exec("INSERT INTO captions (text, video_id, name, language) VALUES ($1, $2, $3, $4)",
     text_body, video_id, name, language)
 
   env.response.status_code = 204
