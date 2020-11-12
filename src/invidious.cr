@@ -3328,14 +3328,16 @@ end
 post "/customcaption/create" do |env|
   video_id = env.params.body["videoid"]
   name = env.params.body["name"]
-  language = env.params.body["language"]
 
   text_fn = env.params.files["text"].tempfile.path
   text = File.read(text_fn)
 
+  # Separate vtt file into language and body
+  header, tmp, text_body = text.partition("\n\n")
+  language = header.partition("Language: ")[2]
+
   ret = PG_DB.exec("INSERT INTO captions (text, video_id, name, language) VALUES ($1, $2, $3, $4)",
-    text, video_id, name, language)
-  puts ret
+    text_body, video_id, name, language)
 
   env.response.status_code = 204
 end
