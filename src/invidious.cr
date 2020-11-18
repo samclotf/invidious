@@ -3308,6 +3308,11 @@ get "/customcaption/:id" do |env|
 
   caption = PG_DB.query_one("SELECT * FROM captions WHERE id = $1", id, as: InvidiousCaption)
 
+  if title = env.params.query["title"]?
+    # https://blog.fastmail.com/2011/06/24/download-non-english-filenames/
+    env.response.headers["Content-Disposition"] = "attachment; filename=\"#{URI.encode_www_form(title)}\"; filename*=UTF-8''#{URI.encode_www_form(title)}"
+  end
+
   <<-END_VTT
   WEBVTT
   Kind: captions
@@ -4868,7 +4873,11 @@ get "/latest_version" do |env|
     title = download_widget["title"].as_s
 
     if label = download_widget["label"]?
-      env.redirect "/api/v1/captions/#{id}?label=#{label}&title=#{title}"
+      if download_widget["custom"]?
+        env.redirect "/customcaption/#{id}?title=#{title}"
+      else
+        env.redirect "/api/v1/captions/#{id}?label=#{label}&title=#{title}"
+      end
       next
     else
       itag = download_widget["itag"].as_s

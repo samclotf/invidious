@@ -6,5 +6,10 @@ struct InvidiousCaption
   property video_id : String?
   property name : String?
   property language : String?
+
+  def name_with_language()
+    "#{self.name} (#{self.language})"
+  end
+
 end
 

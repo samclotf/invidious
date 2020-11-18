@@ -157,8 +157,8 @@
                                 </option>
                             <% end %>
                             <% custom_captions.each do |caption| %>
-                                <option value='{"id":"<%= video.id %>","label":"<%= caption.name %>","title":"<%= URI.encode_www_form(video.title) %>-<%= video.id %>.<%= caption.language %>.vtt"}'>
-                                    <%= translate(locale, "Subtitles - `x` (.vtt)", caption.name) %>
+                                <option value='{"id":"<%= caption.id %>","label":"<%= caption.name %>","title":"<%= URI.encode_www_form(video.title) %>-<%= video.id %>.<%= caption.language %>.vtt","custom":true}'>
+                                    <%= translate(locale, "Subtitles - `x` (.vtt)", caption.name_with_language) %>
                                 </option>
                             <% end %>
                         </select>
@@ -233,7 +233,7 @@
                 <b>Custom Captions:</b>
                 <% custom_captions.each do |caption| %>
                     <form class="caption-delete" action="/customcaption/delete/<%= caption.id %>" method="POST">
-                        <%= caption.name %> (<%= caption.language %>)
+                        <%= caption.name_with_language %>
                         <input type="submit" class="caption-delete-submit pure-button" caption-id=<%= caption.id %> value="Delete">
                     </form>
                 <% end %>
