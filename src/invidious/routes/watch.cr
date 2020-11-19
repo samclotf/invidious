@@ -155,7 +155,7 @@ class Invidious::Routes::Watch < Invidious::Routes::BaseRoute
     }
     captions = captions - preferred_captions
 
-    custom_captions = PG_DB.query_all("SELECT id, name, language FROM captions WHERE video_id = $1", id, as: InvidiousCaption)
+    custom_captions = PG_DB.query_all("SELECT id, name, language FROM captions c JOIN user_captions uc ON c.id=uc.caption_id WHERE video_id = $1", id, as: InvidiousCaption)
 
     aspect_ratio = "16:9"
 

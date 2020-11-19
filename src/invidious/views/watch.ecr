@@ -229,29 +229,31 @@
 
             <hr>
 
-            <div id="caption-edit">
-                <b>Custom Captions:</b>
-                <% custom_captions.each do |caption| %>
-                    <form class="caption-delete" action="/customcaption/delete/<%= caption.id %>" method="POST">
-                        <%= caption.name_with_language %>
-                        <input type="submit" class="caption-delete-submit pure-button" caption-id=<%= caption.id %> value="Delete">
-                    </form>
-                <% end %>
-            </div>
+            <% if env.get? "user" %>
+                <div id="caption-edit">
+                    <b>Custom Captions:</b>
+                    <% custom_captions.each do |caption| %>
+                        <form class="caption-delete" action="/customcaption/delete/<%= caption.id %>" method="POST">
+                            <%= caption.name_with_language %>
+                            <input type="submit" class="caption-delete-submit pure-button" caption-id=<%= caption.id %> value="Delete">
+                        </form>
+                    <% end %>
+                </div>
 
-            <form id="caption-upload" action="/customcaption/create" method="POST" enctype="multipart/form-data">
-                <input type="hidden" id="caption-upload-videoid" name="videoid" value="<%= video.id %>">
-                <label><b>Upload Captions:</b></label>
-                <br>
-                <label for="caption-upload-name">Name:</label>
-                <input type="text" id="caption-upload-name" name="name">
-                <br>
-                <input type="file" id="caption-upload-select" name="text">
-                <br>
-                <input type="submit" id="caption-upload-submit" class="pure-button" value="Upload">
-            </form>
+                <form id="caption-upload" action="/customcaption/create" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" id="caption-upload-videoid" name="videoid" value="<%= video.id %>">
+                    <label><b>Upload Captions:</b></label>
+                    <br>
+                    <label for="caption-upload-name">Name:</label>
+                    <input type="text" id="caption-upload-name" name="name">
+                    <br>
+                    <input type="file" id="caption-upload-select" name="text">
+                    <br>
+                    <input type="submit" id="caption-upload-submit" class="pure-button" value="Upload">
+                </form>
 
-            <hr>
+                <hr>
+            <% end %>
 
             <div id="comments">
                 <% if nojs %>

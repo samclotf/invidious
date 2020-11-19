@@ -10,6 +10,11 @@ struct InvidiousCaption
   def name_with_language()
     "#{self.name} (#{self.language})"
   end
-
 end
 
+struct InvidiousUserCaption
+  include DB::Serializable
+
+  property caption_id : Int32?
+  property email : String?
+end

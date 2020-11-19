@@ -3304,7 +3304,19 @@ end
 get "/customcaption/:id" do |env|
   id = env.params.url["id"]
 
+  user = env.get("user").as(User)
+
+  user_caption = PG_DB.query_one("SELECT uc.email FROM captions c JOIN user_captions uc ON c.id=uc.caption_id WHERE c.id = $1", id, as: InvidiousUserCaption)
+
+  # a user can only view their own
+  if user_caption.email != user.email
+    env.response.status_code = 500
+    next
+  end
+
   env.response.content_type = "text/vtt; charset=UTF-8"
+
+  user = env.get?("user").try &.as(User)
 
   caption = PG_DB.query_one("SELECT * FROM captions WHERE id = $1", id, as: InvidiousCaption)
 
@@ -3325,6 +3337,16 @@ end
 post "/customcaption/delete/:id" do |env|
   id = env.params.url["id"]
 
+  user = env.get("user").as(User)
+
+  user_caption = PG_DB.query_one("SELECT uc.email FROM captions c JOIN user_captions uc ON c.id=uc.caption_id WHERE c.id = $1", id, as: InvidiousUserCaption)
+
+  # a user can only delete their own
+  if user_caption.email != user.email
+    env.response.status_code = 500
+    next
+  end
+
   PG_DB.exec("DELETE FROM captions WHERE id = $1", id)
 
   env.response.status_code = 204
@@ -3341,8 +3363,21 @@ post "/customcaption/create" do |env|
   header, tmp, text_body = text.partition("\n\n")
   language = header.partition("Language: ")[2]
 
-  PG_DB.exec("INSERT INTO captions (text, video_id, name, language) VALUES ($1, $2, $3, $4)",
-    text_body, video_id, name, language)
+  user = env.get?("user").try &.as(User)
+
+  # only users can create captions
+  if !user
+    env.response.status_code = 500
+    next
+  end
+
+  caption = PG_DB.query_one("INSERT INTO captions (text, video_id, name, language) VALUES ($1, $2, $3, $4) RETURNING id",
+    text_body, video_id, name, language,
+    as: InvidiousCaption)
+  caption_id = caption.id
+
+  PG_DB.exec("INSERT INTO user_captions (caption_id, email) VALUES ($1, $2)",
+    caption_id, user.email)
 
   env.response.status_code = 204
 end
